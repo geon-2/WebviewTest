@@ -5,6 +5,8 @@ const ListContainerStyle = styled.div`
   width: 90%;
   margin: 0 auto;
   padding-top: 2rem;
+  overflow-scroll: touch;
+  overflow-x: hidden;
 `;
 
 const ListHeader = styled.div`

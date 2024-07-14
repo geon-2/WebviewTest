@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ListContainer, BlockItem } from "../components/ListComponents";
+import MetaTag from "../components/MetaTag";
 
 interface RecruitItem {
     type: string;
@@ -46,17 +47,19 @@ function Home() {
     })
 
     return (
-        <ListContainer>
-            {recruitList.map((item, index) => (
-                <BlockItem
-                    key={index}
-                    type={item.type}
-                    company={item.company}
-                    date={item.date}
-                />
-            
-            ))}
-        </ListContainer>
+        <>
+            <MetaTag />
+            <ListContainer>
+                {recruitList.map((item, index) => (
+                    <BlockItem
+                        key={index}
+                        type={item.type}
+                        company={item.company}
+                        date={item.date}
+                    />
+                ))}
+            </ListContainer>
+        </>
     );
 }
 
