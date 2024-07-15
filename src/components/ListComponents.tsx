@@ -3,7 +3,7 @@ import {
     ReactElement,
 } from "react";
 import styled from "styled-components";
-import { useSpring, animated } from "react-spring";
+import { useSpring } from "react-spring";
 import { useDrag } from 'react-use-gesture';
 
 
