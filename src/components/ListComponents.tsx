@@ -1,6 +1,6 @@
 import { ReactNode, ReactElement, useState } from "react";
 import styled from "styled-components";
-import { useSwipeable } from "react-swipeable";
+import { useSwipeable, SwipeableHandlers } from "react-swipeable";
 
 const ListContainerStyle = styled.div`
   width: 90%;
@@ -170,16 +170,18 @@ const CardDeleteButton = styled.button`
 function SwipeableCardItem({ type, company, date }: BlockItemProps): ReactElement {
     const [swipeDistance, setSwipeDistance] = useState<number>(0);
 
-    const handlers = useSwipeable({
+    const handlers: SwipeableHandlers = useSwipeable({
         onSwiped: (eventData) => {
+            if (eventData.dir === 'Left' && swipeDistance < -100) {
+              console.log('delete');
+            }
             setSwipeDistance(0);
-        },
-        onSwiping: (eventData) => {
+          },
+          onSwiping: (eventData) => {
             if (eventData.dir == 'Left' || eventData.dir == 'Right') {
                 setSwipeDistance(eventData.absX * (eventData.dir == 'Left' ? -1 : 1));
             }
         },
-        preventDefaultTouchmoveEvent: true,
         trackMouse: true,
     });
 
