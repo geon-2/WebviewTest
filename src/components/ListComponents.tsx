@@ -3,7 +3,7 @@ import {
     ReactElement,
 } from "react";
 import styled from "styled-components";
-import { useSpring } from "react-spring";
+import { useSpring, animated } from "react-spring";
 import { useDrag } from 'react-use-gesture';
 
 
@@ -164,7 +164,7 @@ function CardItem({ type, company, date }: BlockItemProps): ReactElement  {
     );
 }
 
-const SwipeableCardContainer = styled.div`
+const SwipeableCardContainer = styled(animated.div)`
     height: 15rem;
     transition: transform 0.3s;
 `
