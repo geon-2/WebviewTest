@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ListContainer, BlockItem } from "../components/ListComponents";
+import { ListContainer, SwipeableCardItem } from "../components/ListComponents";
 import MetaTag from "../components/MetaTag";
 
 interface RecruitItem {
@@ -51,7 +51,7 @@ function Home() {
             <MetaTag />
             <ListContainer>
                 {recruitList.map((item, index) => (
-                    <BlockItem
+                    <SwipeableCardItem
                         key={index}
                         type={item.type}
                         company={item.company}
