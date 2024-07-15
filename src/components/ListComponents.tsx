@@ -1,5 +1,6 @@
-import { ReactNode, ReactElement } from "react";
+import { ReactNode, ReactElement, useState } from "react";
 import styled from "styled-components";
+import { useSwipeable } from "react-swipeable";
 
 const ListContainerStyle = styled.div`
   width: 90%;
@@ -139,7 +140,7 @@ interface BlockItemProps {
     date: string,
 }
 
-function BlockItem({ type, company, date }: BlockItemProps): ReactElement  {
+function CardItem({ type, company, date }: BlockItemProps): ReactElement  {
     return (
         <ListItem>
             <ListItemTop>
@@ -158,4 +159,39 @@ function BlockItem({ type, company, date }: BlockItemProps): ReactElement  {
     );
 }
 
-export { ListContainer, BlockItem };
+const SwipeableCardContainer = styled.div`
+    height: 15rem;
+    transition: transform 0.3s;
+`
+
+const CardDeleteButton = styled.button`
+`
+
+function SwipeableCardItem({ type, company, date }: BlockItemProps): ReactElement {
+    const [swipeDistance, setSwipeDistance] = useState<number>(0);
+
+    const handlers = useSwipeable({
+        onSwiped: (eventData) => {
+            setSwipeDistance(0);
+        },
+        onSwiping: (eventData) => {
+            if (eventData.dir == 'Left' || eventData.dir == 'Right') {
+                setSwipeDistance(eventData.absX * (eventData.dir == 'Left' ? -1 : 1));
+            }
+        },
+        preventDefaultTouchmoveEvent: true,
+        trackMouse: true,
+    });
+
+    return (
+        <SwipeableCardContainer
+            {...handlers}
+            style={{ transform: `translateX(${swipeDistance}px)` }}
+        >
+            <CardItem type={type} company={company} date={date} />
+            <CardDeleteButton onClick={() => console.log('Delete')}>삭제</CardDeleteButton>
+        </SwipeableCardContainer>
+    )
+}
+
+export { ListContainer, CardItem, SwipeableCardItem };
