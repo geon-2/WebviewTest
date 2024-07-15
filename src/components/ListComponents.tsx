@@ -1,6 +1,14 @@
-import { ReactNode, ReactElement, useState } from "react";
+import { 
+    ReactNode,
+    ReactElement,
+    useState,
+    useRef,
+    useEffect,
+    useCallback
+} from "react";
 import styled from "styled-components";
 import { useSwipeable, SwipeableHandlers } from "react-swipeable";
+
 
 const ListContainerStyle = styled.div`
   width: 90%;
@@ -169,13 +177,25 @@ const CardDeleteButton = styled.button`
 
 function SwipeableCardItem({ type, company, date }: BlockItemProps): ReactElement {
     const [swipeDistance, setSwipeDistance] = useState<number>(0);
+    const swipeDistanceRef = useRef<number>(0);
+
+    const requestRef = useRef<number | null>(null);
+
+    const animate = useCallback(() => {
+        setSwipeDistance(swipeDistanceRef.current);
+        requestRef.current = requestAnimationFrame(animate);
+    }, []);
 
     const handlers: SwipeableHandlers = useSwipeable({
         onSwiped: (eventData) => {
             if (eventData.dir === 'Left' && swipeDistance < -100) {
               console.log('delete');
             }
+            swipeDistanceRef.current = 0;
             setSwipeDistance(0);
+            if (requestRef.current) {
+                cancelAnimationFrame(requestRef.current);
+            }
           },
           onSwiping: (eventData) => {
             if (eventData.dir == 'Left' || eventData.dir == 'Right') {
@@ -184,6 +204,15 @@ function SwipeableCardItem({ type, company, date }: BlockItemProps): ReactElemen
         },
         trackMouse: true,
     });
+
+    useEffect(() => {
+        requestRef.current = requestAnimationFrame(animate);
+        return () => {
+            if (requestRef.current) {
+                cancelAnimationFrame(requestRef.current);
+            }
+        }
+    }, [animate]);
 
     return (
         <SwipeableCardContainer
