@@ -1,13 +1,10 @@
 import { 
     ReactNode,
     ReactElement,
-    useState,
-    useRef,
-    useEffect,
-    useCallback
 } from "react";
 import styled from "styled-components";
-import { useSwipeable, SwipeableHandlers } from "react-swipeable";
+import { useSpring, animated } from "react-spring";
+import { useDrag } from 'react-use-gesture';
 
 
 const ListContainerStyle = styled.div`
@@ -176,51 +173,27 @@ const CardDeleteButton = styled.button`
 `
 
 function SwipeableCardItem({ type, company, date }: BlockItemProps): ReactElement {
-    const [swipeDistance, setSwipeDistance] = useState<number>(0);
-    const swipeDistanceRef = useRef<number>(0);
+    const [{ x }, set] = useSpring(() => ({x: 0}));
 
-    const requestRef = useRef<number | null>(null);
-
-    const animate = useCallback(() => {
-        setSwipeDistance(swipeDistanceRef.current);
-        requestRef.current = requestAnimationFrame(animate);
-    }, []);
-
-    const handlers: SwipeableHandlers = useSwipeable({
-        onSwiped: (eventData) => {
-            if (eventData.dir === 'Left' && swipeDistance < -100) {
-              console.log('delete');
-            }
-            swipeDistanceRef.current = 0;
-            setSwipeDistance(0);
-            if (requestRef.current) {
-                cancelAnimationFrame(requestRef.current);
-            }
-          },
-          onSwiping: (eventData) => {
-            if (eventData.dir == 'Left' || eventData.dir == 'Right') {
-                setSwipeDistance(eventData.absX * (eventData.dir == 'Left' ? -1 : 1));
-            }
-        },
-        trackMouse: true,
-    });
-
-    useEffect(() => {
-        requestRef.current = requestAnimationFrame(animate);
-        return () => {
-            if (requestRef.current) {
-                cancelAnimationFrame(requestRef.current);
-            }
+    const bind = useDrag(({ down, movement: [mx], direction: [dx], velocity }) => {
+        if (!down && velocity > 0.2 && dx === -1) {
+            set({ x:-window.innerWidth });
+            console.log('Delete');
+        } else {
+            set({ x: down ? mx : 0 });
         }
-    }, [animate]);
+    });
 
     return (
         <SwipeableCardContainer
-            {...handlers}
-            style={{ transform: `translateX(${swipeDistance}px)` }}
+            {...bind()}
+            style={{ transform: x.to((x: number) => `translateX(${x}px)`) }}
         >
             <CardItem type={type} company={company} date={date} />
-            <CardDeleteButton onClick={() => console.log('Delete')}>삭제</CardDeleteButton>
+            <CardDeleteButton 
+                onClick={() => console.log('Delete')}
+                style={{ right: -x.get() > 100 ? `calc(100% + ${-x.get()}px)` : '10px' }}
+            >삭제</CardDeleteButton>
         </SwipeableCardContainer>
     )
 }
